@@ -31,7 +31,7 @@ from mpl_toolkits.mplot3d import Axes3D
 ##################################################################################################
 ## 1
 ##################################################################################################
-def show_image(image_path: Path, image_name, color_mode=0, show=False):
+def show_image(image_path: Path, image_name, color_mode=0, bgr=False, show=False):
     ''' 
     Description: This function displays an image using openCV.
 
@@ -62,13 +62,16 @@ def show_image(image_path: Path, image_name, color_mode=0, show=False):
         
         
         # convert color channel order
-        if color_mode != 0:
+        if color_mode != 0 and bgr == False:
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) # cv2 (BGR) -> matplotlib (RGB)
+            print("BGR -> RGB")
 
         # display image
         if show: 
             if color_mode == 0:
                 plt.imshow(img, cmap='gray')
+            elif bgr == True:
+                plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
             else:
                 plt.imshow(img)
             plt.title(image_name)
