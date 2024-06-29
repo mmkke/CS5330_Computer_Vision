@@ -50,12 +50,66 @@ parent_dir = Path(__file__).resolve().parent.parent.parent
 if str(parent_dir) not in sys.path:
     sys.path.insert(0, str(parent_dir))
 
-import cv_utils as cv
+#import cv_utils as cv
 
 ##################################################################################################
 ## Functions
 ##################################################################################################
+def show_image(image_path: Path, image_name, color_mode=0, bgr=False, show=False):
+    ''' 
+    Description: This function displays an image using openCV.
 
+        https://docs.opencv.org/4.x/d4/da8/group__imgcodecs.html
+
+    Inputs:
+            image_path (Path): Path to image.
+             color_mode(int)->0: openCV image colormode:
+                                                     0 = grayscale (default)
+                                                     1 = RGB
+                                                    -1 = unchanged for original image
+            image_name (str): Name for image, default is file name of image. 
+            show(bool)->False: If True will display image using matplotlib.
+
+    Outputs:
+            image_name (str): Image name 
+                   img (ndarray): cv2 image
+
+    '''
+
+    try:
+        # Create openCV image obj
+        img = cv2.imread(str(image_path), color_mode)
+
+        # Dheck img create successfully
+        if img is None:
+            raise FileNotFoundError(f"No image found at {str(image_path)}.")
+        
+        
+        # convert color channel order
+        if color_mode != 0 and bgr == False:
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) # cv2 (BGR) -> matplotlib (RGB)
+            print("BGR -> RGB")
+
+        # display image
+        if show: 
+            if color_mode == 0:
+                plt.imshow(img, cmap='gray')
+            elif bgr == True:
+                plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+            else:
+                plt.imshow(img)
+            plt.title(image_name)
+            plt.show()
+
+        return  image_name, img
+         
+    
+    except FileNotFoundError as e:
+        print(e, file=sys.stderr)
+        return None
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}", file=sys.stderr)
+        return None
 
 
 ##################################################################################################
@@ -66,7 +120,7 @@ def main():
     imgs = []
 
     ## Read in Image
-    img1_name, img1 = cv.show_image((IMAGE_PATH / (IMAGE_FILENAME_1 + FILE_EXT)),
+    img1_name, img1 = show_image((IMAGE_PATH / (IMAGE_FILENAME_1 + FILE_EXT)),
                                  image_name=IMAGE_FILENAME_1,
                                  color_mode=1,
                                  bgr=False,
